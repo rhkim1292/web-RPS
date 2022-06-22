@@ -1,3 +1,4 @@
+// Randomly determines the cpu player's choice between rock, paper, or scissors.
 function computerPlay() {
     let roll = Math.random();
     if (roll < .33) {
@@ -9,6 +10,7 @@ function computerPlay() {
     }
 }
 
+// Plays one round of RPS using the player's choice and the cpu's choice.
 function playRound(playerSelection, computerSelection) {
     playerSelectionLowerCase = playerSelection.toLowerCase();
     if (playerSelectionLowerCase === 'rock') {
@@ -26,4 +28,31 @@ function playRound(playerSelection, computerSelection) {
     }
 }
 
-console.log(playRound('paper', 'Scissors'));
+// Executes the entire game of RPS
+function game() {
+    let playerWins = 0;
+    let cpuWins = 0;
+
+    for (let i = 0; i < 5; i++) {
+        let playerChoice = prompt('It\'s time to choose! Rock, Paper, or Scissors?!');
+        let results = playRound(playerChoice, computerPlay());
+        console.log(results);
+
+        results = results.substring(0, 5);
+
+        if (results === 'You W') {
+            playerWins++;
+        } else if (results === 'You L') {
+            cpuWins++;
+        }
+    }
+
+    console.log('Here are the final results...\nPlayer Wins: ' + playerWins + '\nCPU Wins: ' + cpuWins);
+    if (playerWins > cpuWins) {
+        console.log('The player wins overall with ' + playerWins + ' round wins!');
+    } else {
+        console.log('The cpu wins overall with ' + cpuWins + ' round wins!');
+    }
+}
+
+game();
