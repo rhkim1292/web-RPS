@@ -51,12 +51,38 @@ function determineWinner(results) {
     let resultsSubstr = results.substring(0, 5);
 
     if (resultsSubstr === "You W") {
-        return 'player';
-    } else if (resultsSubstr === 'You L') {
-        return 'cpu';
+        return "player";
+    } else if (resultsSubstr === "You L") {
+        return "cpu";
     }
 
-    return 'tie';
+    return "tie";
+}
+
+function updateUI(
+    playerCurrWins,
+    cpuCurrWins,
+    playerChoice,
+    playerWinsElement,
+    cpuWinsElement,
+    resultText
+) {
+    let playerWins = playerCurrWins;
+    let cpuWins = cpuCurrWins;
+
+    resultText.textContent = playRound(playerChoice, computerPlay());
+
+    let winnerOfRound = determineWinner(resultText.textContent);
+    if (winnerOfRound === "player") {
+        playerWins++;
+    } else if (winnerOfRound === "cpu") {
+        cpuWins++;
+    }
+
+    playerWinsElement.textContent = `Your Wins: ${playerWins}`;
+    cpuWinsElement.textContent = `CPU Wins: ${cpuWins}`;
+
+    return [playerWins, cpuWins];
 }
 
 // Executes the entire game of RPS
@@ -64,26 +90,48 @@ function game() {
     let playerWins = 0;
     let cpuWins = 0;
 
-    const rockBtn = document.querySelector("#rockBtn");
-    const paperBtn = document.querySelector("#paperBtn");
-    const scissorsBtn = document.querySelector("#scissorsBtn");
-    const winsDisplayContainer = document.querySelector(".wins-display-container");
     const playerWinsElement = document.querySelector("#playerWins");
     const cpuWinsElement = document.querySelector("#cpuWins");
-    const resultTextContainer = document.querySelector(".result-text-container");
     const resultText = document.querySelector("#resultText");
-    
-    rockBtn.addEventListener("click", () => {
-        resultText.textContent = playRound("rock", computerPlay());
-        let winnerOfRound = determineWinner(resultText.textContent);
-        if (winnerOfRound === 'player') {
-            playerWins++;
-        } else if (winnerOfRound === 'cpu') {
-            cpuWins++;
+    const rpsBtnContainer = document.querySelector(".rpsBtn-container");
+
+    rpsBtnContainer.addEventListener("click", (e) => {
+        let isButton =
+            e.target.nodeName === "BUTTON" || e.target.nodeName === "I";
+            
+        if (!isButton) {
+            return;
         }
-        playerWinsElement.textContent = `Your Wins: ${playerWins}`;
-        cpuWinsElement.textContent = `CPU Wins: ${cpuWins}`;
-        winsDisplayContainer.replaceChildren(playerWinsElement, cpuWinsElement);
+
+        let playerChoice = "";
+        if (
+            e.target.id === "rockBtn" ||
+            e.target.parentElement.id === "rockBtn"
+        ) {
+            playerChoice = "rock";
+        } else if (
+            e.target.id === "paperBtn" ||
+            e.target.parentElement.id === "paperBtn"
+        ) {
+            playerChoice = "paper";
+        } else if (
+            e.target.id === "scissorsBtn" ||
+            e.target.parentElement.id === "scissorsBtn"
+        ) {
+            playerChoice = "scissors";
+        }
+
+        let winningResults = updateUI(
+            playerWins,
+            cpuWins,
+            playerChoice,
+            playerWinsElement,
+            cpuWinsElement,
+            resultText
+        );
+
+        playerWins = winningResults[0];
+        cpuWins = winningResults[1];
     });
 
     console.log(
