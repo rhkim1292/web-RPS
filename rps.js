@@ -62,13 +62,20 @@ function determineWinner(results) {
 function updateUI(
     playerCurrWins,
     cpuCurrWins,
-    playerChoice,
     playerWinsElement,
     cpuWinsElement,
-    resultText
+    resultText,
+    playerChoice = ""
 ) {
     let playerWins = playerCurrWins;
     let cpuWins = cpuCurrWins;
+
+    if (playerChoice === "") {
+        playerWinsElement.textContent = `Your Wins: ${playerWins}`;
+        cpuWinsElement.textContent = `CPU Wins: ${cpuWins}`;
+        resultText.innerHTML = "Click on a button below to start a<br>first to 5 game of RPS with the CPU."
+        return [playerWins, cpuWins];
+    }
 
     resultText.textContent = playRound(playerChoice, computerPlay());
 
@@ -85,10 +92,24 @@ function updateUI(
     return [playerWins, cpuWins];
 }
 
+function didGameEnd(playerWins, cpuWins, resultText) {
+    if (playerWins === 5) {
+        resultText.innerHTML = "The player wins!<br>Click any button to reset.";
+        return true;
+    }
+    if (cpuWins === 5) {
+        resultText.innerHTML = "The cpu wins!<br>Click any button to reset.";
+        return true;
+    }
+
+    return false;
+}
+
 // Executes the entire game of RPS
 function game() {
     let playerWins = 0;
     let cpuWins = 0;
+    let gameEnd = false;
 
     const playerWinsElement = document.querySelector("#playerWins");
     const cpuWinsElement = document.querySelector("#cpuWins");
@@ -100,6 +121,14 @@ function game() {
             e.target.nodeName === "BUTTON" || e.target.nodeName === "I";
             
         if (!isButton) {
+            return;
+        }
+
+        if (gameEnd) {
+            playerWins = 0;
+            cpuWins = 0;
+            gameEnd = false;
+            updateUI(playerWins, cpuWins, playerWinsElement, cpuWinsElement, resultText);
             return;
         }
 
@@ -124,30 +153,17 @@ function game() {
         let winningResults = updateUI(
             playerWins,
             cpuWins,
-            playerChoice,
             playerWinsElement,
             cpuWinsElement,
-            resultText
+            resultText,
+            playerChoice
         );
 
         playerWins = winningResults[0];
         cpuWins = winningResults[1];
+        
+        gameEnd = didGameEnd(playerWins, cpuWins, resultText);
     });
-
-    console.log(
-        "Here are the final results...\nPlayer Wins: " +
-            playerWins +
-            "\nCPU Wins: " +
-            cpuWins
-    );
-
-    if (playerWins > cpuWins) {
-        console.log(
-            "The player wins overall with " + playerWins + " round wins!"
-        );
-    } else {
-        console.log("The cpu wins overall with " + cpuWins + " round wins!");
-    }
 }
 
 game();
